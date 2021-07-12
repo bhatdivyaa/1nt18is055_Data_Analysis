@@ -1,0 +1,376 @@
+---
+title: "Learning Activity I"
+author: "Asha Madguni(1NT18IS033) , Divya Bhat(1NT18IS055)"
+date: "06/07/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+## Load required libraries
+  install.packages("knitr")
+```{r}
+library(dplyr)
+library(ggplot2)
+library(rmarkdown)
+
+```
+
+
+## Load file
+``` {r}   
+      dataset = read.csv(file= file.choose(), header = TRUE, sep = ",")
+```
+
+## Viewing the loaded file
+```{r}
+dataset
+```
+
+## Dimension of dataset
+```{r}
+dim(dataset)
+```
+
+## Class of dataset 
+```{r}
+class(dataset)
+```
+
+## Summary
+```{r}
+summary(dataset)
+
+```
+## Structure of the dataset
+```{r}
+str(dataset)
+```
+
+
+## Viewing the starting 6 records of  dataset 
+```{r}
+head(dataset)
+```
+
+
+## Giving options to head
+```{r}
+head(dataset, n=50)
+```
+## Viweing the last 6 records of dataset 
+```{r}
+tail(dataset)
+```
+
+## Giving options to tail
+```{r}
+tail(dataset, n=50)
+```
+
+## Displaying particular columns
+```{r}
+   dataset$IMDB.Score
+```
+## Converting integer to factor
+```{r}
+cpy_runtime = as.factor(dataset$Runtime)
+cpy_runtime
+```
+## Converting integer to character
+```{r}
+  cpy_runtime1 = as.character(dataset$Runtime)
+  cpy_runtime1
+```
+
+## Ordering the column
+```{r}
+  order(dataset$Runtime)
+```
+
+## Sorting the column
+```{r}
+  sort(dataset$IMDB.Score)
+```
+
+
+## Sorting with conditions
+```{r}
+ sort(dataset[,4])
+```
+
+## Ranking the column
+```{r}
+  rank(dataset$IMDB.Score)
+```
+## Manipulation of dataframe
+
+## Pick out the item from the 438 row and the third column:
+```{r}
+ dataset[438,3]
+```
+## Select the 100th row and display columns one to five:
+```{r}
+dataset[100,1:5]
+```
+## Display all the rows by leaving out the first value; select the first column alone:
+```{r}
+ dataset[,1]
+```
+## Specify several rows but leave out a value at the end to display all columns:
+```{r}
+ dataset[c(120,335,540,240),]
+```
+## Now specify several rows but use a -4 to indicate that you want to display all columns except the fourth:
+```{r}
+ dataset[c(129,300,500,438),-4]
+```
+## The columns are named you can select one by using its name rather than a simple value:
+```{r}
+dataset[c(156,379,405,7), 'Genre']
+```
+## Giving a single value in the square brackets:
+```{r}
+dataset[1]
+```
+## Viewing of column or row 
+```{r}
+names(dataset)
+```
+## Listing the  row names
+```{r}
+  row.names(dataset)
+```
+## Listing the column names
+```{r}
+  colnames(dataset)
+```
+## Length of the dataset
+```{r}
+length(dataset)
+```
+
+## Rotating the dataset
+```{r}
+data_cpy = t(dataset)
+data_cpy
+
+```
+
+## Coverting data frame into list
+```{r}
+li=as.list(dataset)
+li
+
+
+```
+
+## Quantile
+```{r}
+
+quantile(dataset$Runtime)
+
+
+```
+## Adding a Column to a Data Frame
+```{r}
+dataset %>% mutate(newcol=NA)
+
+```
+
+## Deleting a Column from a Data Frame
+```{r}
+data1=dataset
+data1 %>% select(Title)
+
+```
+
+##  Renaming Columns in a Data Frame
+```{r}
+data1 %>% rename(lang=Language)
+
+```
+
+## Reordering Columns in a Data Frame
+```{r}
+data1 %>% select(Language,Premiere,Title,Runtime,IMDB.Score)
+
+```
+
+##  Getting a Subset of a Data Frame
+```{r}
+data1 %>% filter(Language=="Hindi" & Runtime<100)
+data1 %>% select(Title,Language)
+data1 %>% filter(Language=="Hindi" & Runtime<100) %>% select(Title,Language)
+
+
+```
+
+##  Changing the Names of Items in a Character Vector
+```{r}
+recode(data1$Language,"Hindi"="Hin","English"="Eng")
+
+```
+
+##  Summarizing Data by Groups
+```{r}
+data1 %>% group_by(Language,Title) %>% summarize(Runtime=mean(Runtime),IMDB.Score=mean(IMDB.Score))
+
+```
+## Histogram
+```{r}
+
+ggplot(dataset,aes(x=IMDB.Score))+geom_histogram()
+ggplot(dataset,aes(x=Runtime))+geom_histogram(binwidth = 10,fill="white",color="black")
+ggplot(dataset,aes(x=Runtime))+geom_histogram(binwidth = 10,fill="yellow",color="black",boundary=50)
+
+
+```
+
+## Histogram of grouped data with free scale
+```{r}
+dataset1$IMDB=cut(dataset1$IMDB.Score,breaks=c(2,4,5,6,9),labels=c("average","good","better","best"))
+ggplot(dataset1,aes(x=Runtime))+ geom_histogram(fill = "white", colour = "black") +facet_grid(IMDB ~ ., scales = "free")
+```
+## Multiple histograms with different fill colors
+```{r}
+ggplot(dataset1, aes(x = Runtime, fill = IMDB)) +geom_histogram(position = "identity", alpha = 0.7)
+```
+## Density Curve
+```{r}
+ggplot(dataset,aes(x=Runtime))+geom_density()
+ggplot(dataset,aes(x=IMDB.Score))+geom_density()
+ggplot(dataset,aes(x=IMDB.Score))+geom_line(stat="density")+geom_line(stat="density",adjust = 0.25,colour="red")+geom_line(stat="density",adjust=2,colour="blue")
+ ggplot(dataset,aes(x=Runtime))+geom_density(fill="blue",alpha=.2,colour=NA)+xlim(2,250)+geom_line(stat="density")
+```
+
+##  Density curve overlaid on a histogram
+```{r}
+ggplot(dataset,aes(x=IMDB.Score,y=..density..))+geom_histogram(fill="white",colour="red",size=.2)+geom_density()
+
+```
+## Map smoke to colour
+
+```{r}
+ggplot(dataset1, aes(x = Runtime, colour = IMDB)) +geom_density()
+```
+# Map smoke to fill and make the fill semitransparent by setting alpha
+```{r}
+ggplot(dataset1, aes(x = Runtime, fill = IMDB)) +geom_density(alpha = .7)
+```
+## Density curves with facets 
+```{r}
+ggplot(dataset1, aes(x = Runtime)) +geom_density() +facet_grid(IMDB ~ .)
+```
+
+
+
+
+## Density curves overlaid on histograms
+```{r}
+ggplot(dataset1, aes(x = Runtime, y = ..density..)) +geom_histogram(binwidth = 5, fill = "cornsilk", colour = "grey60",size = .2) +geom_density() +facet_grid(IMDB ~ .)
+```
+
+## Boxplot
+```{r}
+ggplot(dataset,aes(x=factor(IMDB.Score),y=Runtime))+geom_boxplot()
+ggplot(dataset,aes(x=factor(IMDB.Score),y=Runtime))+geom_boxplot(outlier.size=1.5,outlier.shape=21)
+ggplot(dataset1, aes(x = factor(IMDB), y = Runtime)) +geom_boxplot()
+ggplot(dataset,aes(x=1,y=IMDB.Score))+geom_boxplot()+scale_x_continuous(breaks=NULL)+theme(axis.title.x=element_blank())
+ggplot(dataset,aes(x=1,y=Runtime))+geom_boxplot()+scale_x_continuous(breaks=NULL)+theme(axis.title.x=element_blank())
+ggplot(dataset,aes(x=1,y=IMDB.Score))+geom_boxplot(notch=TRUE)+scale_x_continuous(breaks=NULL)+theme(axis.title.x=element_blank())
+
+
+```
+## Adding means to boxplot
+```{r}
+ggplot(dataset,aes(x=1,y=Runtime))+geom_boxplot()+scale_x_continuous(breaks=NULL)+theme(axis.title.x=element_blank())+stat_summary(fun="mean",geom="point",shape=23,size=3,fill="red")
+ggplot(dataset,aes(x=1,y=IMDB.Score))+geom_boxplot()+scale_x_continuous(breaks=NULL)+theme(axis.title.x=element_blank())+stat_summary(fun="mean",geom="point",shape=23,size=3,fill="red")
+
+```
+## Frequency Polygon
+```{r}
+ggplot(dataset,aes(x=Runtime))+geom_freqpoly()
+ggplot(dataset,aes(x=IMDB.Score))+geom_freqpoly(binwidth=5)
+
+```
+## Violin plot
+```{r}
+ggplot(dataset,aes(x=1,y=IMDB.Score))+geom_violin()
+ggplot(dataset,aes(x=1,y=Runtime))+geom_violin()
+ggplot(dataset,aes(x=1,y=Runtime))+geom_violin()+geom_boxplot(width=0.1,fill="green")
+ggplot(dataset,aes(x=1,y=Runtime))+geom_violin()+geom_boxplot(width=0.1,fill="green")+stat_summary(fun=mean,fill="red",shape=21,geom="point",size=5)
+ggplot(dataset,aes(x=1,y=Runtime))+geom_violin(trim=F)
+
+```
+## Scatter plot
+```{r}
+plot(dataset$IMDB.Score,dataset$Runtime)
+```
+## Scatter plot using ggplot function along with geom_point
+```{r}
+ggplot(dataset, aes(x = IMDB.Score, y =Runtime)) +geom_point()
+
+
+```
+## Line graph
+```{r}
+ plot(dataset$IMDB.Score, dataset$Runtime, type = "l")
+```
+
+## Line graph with points 
+```{r}
+plot(dataset$IMDB.Score, dataset$Runtime, type = "l")
+points(dataset$IMDB.Score, dataset$Runtime)
+```
+## Bargraph using barplot()
+```{r}
+barplot(dataset$Runtime, names.arg = dataset$IMDB.Score)
+```
+
+## Bargraph using ggplot() and geom_col()
+```{r}
+ggplot(dataset, aes(x = factor(Runtime), y = IMDB.Score)) +geom_col()
+```
+## Bargraph of counts
+```{r}
+ggplot(dataset, aes(x = factor(IMDB.Score))) +
+     geom_bar(fill="blue")
+```
+## Dot plot
+```{r}
+ggplot(dataset, aes(x = IMDB.Score))+geom_dotplot(binwidth = 10/100)
+```
+
+## Dot plot by removing the labels 
+```{r}
+ggplot(dataset, aes(x = IMDB.Score))+geom_dotplot(binwidth = .1) +    geom_rug() +     scale_y_continuous(breaks = NULL) +theme(axis.title.y = element_blank())
+```
+## Dot plot with center stacked dots
+```{r}
+ggplot(dataset, aes(x = IMDB.Score))+geom_dotplot(binwidth = .1, stackdir = "center") +    scale_y_continuous(breaks = NULL) +     theme(axis.title.y = element_blank())
+```
+## Making Multiple Dot Plots for Grouped Data
+```{r}
+ggplot(dataset, aes(x = Runtime, y = IMDB.Score)) +
+    geom_dotplot(binaxis = "y", binwidth = .1, stackdir = "center")
+```
+##  Dot plot overlaid on box plot
+```{r}
+ggplot(dataset, aes(x = 1, y = IMDB.Score)) +
+     geom_boxplot(outlier.colour = "black", width = .2) +
+    geom_dotplot(binaxis = "y", binwidth = .12, stackdir = "center", fill = NA)
+```
+## Dotplot next to box plot
+```{r}
+ggplot(dataset,aes(x=1,y=IMDB.Score))+geom_boxplot(width=0.25,aes(x=1+0.2))+geom_dotplot( binwidth=0.1,binaxis = "y",stackdir="center")
+```
+## Making a Density Plot of Two-Dimensional Data
+```{r}
+ggplot(dataset,aes(x=Runtime,y=IMDB.Score))+stat_density2d(aes(color=..level..))
+ggplot(dataset,aes(x=IMDB.Score,y=Runtime))+stat_density2d(aes(color=..level..))
+ggplot(dataset,aes(x=IMDB.Score,y=Runtime))+geom_point()+stat_density2d(aes(color=..level..))
+ggplot(dataset,aes(x=Runtime,y=IMDB.Score))+geom_point()+stat_density2d(aes(color=..level..))
+ggplot(dataset,aes(x=IMDB.Score,y=Runtime))+geom_point()+stat_density2d()
+ggplot(dataset,aes(x=Runtime,y=IMDB.Score))+geom_point()+stat_density2d()
+                                                           
+```
